@@ -1,7 +1,6 @@
 // node-appwrite sdk
 "use server";
 
-
 import { Account, Avatars, Client, Storage, Databases } from "node-appwrite";
 import { appwriteConfig } from "./config";
 import { cookies } from "next/headers";

@@ -1,11 +1,12 @@
 "use server";
 
 import { ID, Query } from "node-appwrite";
-import { createAdminClient } from "../appwrite";
+import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
 import { truncateSync } from "node:fs";
+import { avatarPlaceholderUrl } from "@/constants";
 
 const handleError = (error: unknown, message: string) => {
   console.log(error, message);
@@ -56,8 +57,7 @@ export const createAccount = async ({
         {
           fullName,
           email,
-          avatar:
-            "https://static.vecteezy.com/system/resources/thumbnails/027/951/137/small_2x/stylish-spectacles-guy-3d-avatar-character-illustrations-png.png",
+          avatar: avatarPlaceholderUrl,
           accountId,
         }
       );
@@ -68,18 +68,39 @@ export const createAccount = async ({
   }
 };
 
-export const verifySecret = async({accountId, password}:{accountId:string; password:string;})=>{
+export const verifySecret = async ({
+  accountId,
+  password,
+}: {
+  accountId: string;
+  password: string;
+}) => {
   try {
-    const {account} = await createAdminClient();
+    const { account } = await createAdminClient();
     const session = await account.createSession(accountId, password);
-    (await cookies()).set('appwrite-session',session.secret,{
-      path:"/",
-      httpOnly:true,
-      sameSite:"strict",
-      secure:true
-    })
-    return parseStringify({sessionId:session?.$id})
+    (await cookies()).set("appwrite-session", session.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+    return parseStringify({ sessionId: session?.$id });
   } catch (error) {
-    handleError(error,"Failed to verify OTP")
+    handleError(error, "Failed to verify OTP");
   }
+};
+
+export const getCurrentUser = async () => {
+  const { databases, account } = await createSessionClient();
+  const result = await account.get();
+
+  const user = await databases.listDocuments(
+    appwriteConfig?.databaseId,
+    appwriteConfig?.usersCollectionId,
+    [Query.equal("accountId", result.$id)]
+  );
+
+  if (user.total <= 0) return null;
+
+  return parseStringify(user.documents[0]);
 };
