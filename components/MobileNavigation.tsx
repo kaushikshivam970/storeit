@@ -12,6 +12,12 @@ import {
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Separator } from "./ui/separator";
+import { navItems } from "@/constants";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import FileUploader from "./FileUploader";
+import { signOutUser } from "@/lib/actions/users.action";
 
 interface Props {
   fullName: string;
@@ -66,7 +72,52 @@ const MobileNavigation = ({
             </div>
             <Separator className="mb-4 bg-light-200/20" />
           </SheetTitle>
-          <nav className="mobile-nav"></nav>
+          <nav className="mobile-nav">
+            <ul className="mobile-nav-list">
+              {navItems.map(({ url, icon, name }) => (
+                <Link key={name} href={url} className="lg:w-full">
+                  <li
+                    className={cn(
+                      "mobile-nav-item",
+                      pathname === url && "shad-active"
+                    )}
+                  >
+                    <Image
+                      src={icon}
+                      alt={name}
+                      width={24}
+                      height={24}
+                      className={cn(
+                        "nav-icon",
+                        pathname === url && "nav-icon-active"
+                      )}
+                    />
+                    <p>{name}</p>
+                  </li>
+                </Link>
+              ))}
+            </ul>
+          </nav>
+          <Separator className="my-5 bg-lime-200/20" />
+          <div className="flex flex-col justify-between gap-5 pb-5">
+            <FileUploader />
+            <Button
+              type="submit"
+              className="mobile-sign-out-button"
+              onClick={async () => {
+                await signOutUser();
+              }}
+            >
+              <Image
+                src="/assets/icons/logout.svg"
+                alt="logo"
+                width={24}
+                height={24}
+                className="w-6"
+              />
+              <p>Logout</p>
+            </Button>
+          </div>
         </SheetContent>
       </Sheet>
     </header>
