@@ -5,7 +5,6 @@ import { InputFile } from "node-appwrite/file";
 import { appwriteConfig } from "../appwrite/config";
 import { ID } from "node-appwrite";
 import { constructFileUrl, getFileType, parseStringify } from "../utils";
-import { error } from "console";
 import { revalidatePath } from "next/cache";
 
 const handleError = (error: unknown, message: string) => {
