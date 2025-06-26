@@ -128,17 +128,18 @@ export const getCurrentUser = async () => {
     if (user.total <= 0) return null;
 
     return parseStringify(user.documents[0]);
-  } catch (err) {
-    console.warn("❌ Failed to fetch user from Appwrite:", err.message || err);
+  } catch (error) {
+    console.warn("❌ Failed to fetch user from Appwrite:", error);
     return null;
   }
 };
 
 
 export const signOutUser = async () => {
-  const { account } = await createSessionClient();
+  const client = await createSessionClient();
+  if(!client) return null
   try {
-    await account.deleteSession("current");
+    await client.account.deleteSession("current");
     (await cookies()).delete("appwrite-session");
   } catch (error) {
     handleError(error, "Failed to sign out user");
