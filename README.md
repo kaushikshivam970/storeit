@@ -1,5 +1,3 @@
-<!-- video Time --- 6:17:30 -->
-
 <div align="center">
   <br />
     <a href="https://youtu.be/lie0cr3wESQ" target="_blank">
