@@ -91,20 +91,49 @@ export const verifySecret = async ({
   }
 };
 
+// export const getCurrentUser = async () => {
+//   const { databases, account } = await createSessionClient();
+//   try {
+//     const result = await account.get();
+//     console.log("RESULT",result)
+//     const user = await databases.listDocuments(
+//       appwriteConfig?.databaseId,
+//       appwriteConfig?.usersCollectionId,
+//       [Query.equal("accountId", result.$id)]
+//     );
+
+//     if (user.total <= 0) return null;
+
+//     return parseStringify(user.documents[0]);
+//   } catch (error) {
+//     console.log(error)
+//     return null;
+//   }
+// };
+
 export const getCurrentUser = async () => {
-  const { databases, account } = await createSessionClient();
-  const result = await account.get();
+  const client = await createSessionClient();
 
-  const user = await databases.listDocuments(
-    appwriteConfig?.databaseId,
-    appwriteConfig?.usersCollectionId,
-    [Query.equal("accountId", result.$id)]
-  );
+  if (!client) return null;
 
-  if (user.total <= 0) return null;
+  try {
+    const result = await client.account.get();
 
-  return parseStringify(user.documents[0]);
+    const user = await client.databases.listDocuments(
+      appwriteConfig?.databaseId,
+      appwriteConfig?.usersCollectionId,
+      [Query.equal("accountId", result.$id)]
+    );
+
+    if (user.total <= 0) return null;
+
+    return parseStringify(user.documents[0]);
+  } catch (err) {
+    console.warn("❌ Failed to fetch user from Appwrite:", err.message || err);
+    return null;
+  }
 };
+
 
 export const signOutUser = async () => {
   const { account } = await createSessionClient();
