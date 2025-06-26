@@ -92,13 +92,14 @@ const FileUploader = ({ ownerId, accountId, className }: Props) => {
                     url={convertFileToUrl(file)}
                   />
                   <div className="preview-item-name">
-                    {file.name}
+                    <p>{file.name}</p>
+
                     <Image
                       src="/assets/icons/file-loader.gif"
                       alt="loader"
                       width={80}
                       height={26}
-                      className=""
+                      className="flex-shrink-0"
                     />
                   </div>
                 </div>
